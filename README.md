@@ -26,7 +26,7 @@ scramv1 build -j 20
 ## LLDJstandalones Framework checkout
 
 # first fork the repository to make your own workspace
-git clone https://github.com/tmrhombus/LLDJntuples2017.git
+git clone https://github.com/tmrhombus/VHLLDJanalysis2017.git
 
  # If you want to check out a specific branch
  # git fetch origin

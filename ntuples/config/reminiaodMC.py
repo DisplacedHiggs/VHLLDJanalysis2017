@@ -165,6 +165,8 @@ process.MINIAODSIMoutput.outputCommands.extend(
  'keep *_ak4PFJets_*_RECO',
  'keep *_ak4PFJetsCHS_*_RECO',
  'keep *_generalTracks_*_RECO',
+ 'keep *_offlinePrimaryVertices_*_RECO',
+ 'keep *_offlineBeamSpot_*_RECO',
  )
 )
 

@@ -12,7 +12,7 @@ lldjNtuple::lldjNtuple(const edm::ParameterSet& ps) :
   hltPrescale_(ps,consumesCollector(),*this) 
 {
   
-  //lldj_pset_ = ps;
+  lldj_pset_ = ps;
 
   // LLDJ custom miniAOD
   doLLDJAOD_                     = ps.getParameter<bool>("doLLDJAOD");
@@ -45,6 +45,23 @@ lldjNtuple::lldjNtuple(const edm::ParameterSet& ps) :
   //miniAODpatTrgResultsLabel_        = consumes<edm::TriggerResults>           (ps.getParameter<InputTag>("miniAODpatTriggerResults"));
   miniAODpfMETlabel_                = consumes<View<pat::MET> >               (ps.getParameter<InputTag>("miniAODpfMETLabel"));
 
+
+  // Jets ---
+  miniAODjetsAK4Label_              = consumes<View<pat::Jet> >               (ps.getParameter<InputTag>("miniAODak4JetSrc"));
+
+  // jets
+  ///jetsAK4Label_                     = consumes<View<pat::Jet> >               (ps.getParameter<InputTag>("ak4JetSrc"));
+  //AODjetsAK4Label_                  = consumes<View<pat::Jet> >               (ps.getParameter<InputTag>("ak4JetSrc"));
+  AODak4CaloJetsLabel_              = consumes<View<reco::CaloJet> >          (ps.getParameter<InputTag>("AODak4CaloJetsSrc"));  
+  AODak4PFJetsLabel_                = consumes<View<reco::PFJet>   >          (ps.getParameter<InputTag>("AODak4PFJetsSrc"));    
+  AODak4PFJetsCHSLabel_             = consumes<View<reco::PFJet>   >          (ps.getParameter<InputTag>("AODak4PFJetsCHSSrc")); 
+  selectedPatJetsLabel_             = consumes<edm::View<pat::Jet> >          (ps.getParameter<InputTag>("selectedPatJetsSrc"));
+  AODTrackLabel_                    = consumes<edm::View<reco::Track> >       (ps.getParameter<InputTag>("AODTrackSrc"));
+  AODVertexLabel_                   = consumes<edm::View<reco::Vertex> >      (ps.getParameter<InputTag>("AODVertexSrc"));
+  // beamspot 
+  beamspotLabel_                    = consumes<reco::BeamSpot>                (ps.getParameter<InputTag>("beamspotLabel_"));
+
+
   //miniAODvtxBSLabel_                = consumes<reco::VertexCollection>        (ps.getParameter<InputTag>("miniAODVtxBSLabel"));
   miniAODtrgEventLabel_             = consumes<trigger::TriggerEvent>         (ps.getParameter<InputTag>("miniAODtriggerEvent"));
   miniAODgeneratorLabel_            = consumes<GenEventInfoProduct>           (ps.getParameter<InputTag>("miniAODgeneratorLabel"));
@@ -67,7 +84,6 @@ lldjNtuple::lldjNtuple(const edm::ParameterSet& ps) :
   miniAODpckPFCdsLabel_             = consumes<vector<pat::PackedCandidate>>  (ps.getParameter<InputTag>("miniAODpackedPFCands"));
   miniAODrecoCdsLabel_              = consumes<View<reco::Candidate>>         (ps.getParameter<InputTag>("miniAODpackedPFCands"));
 
-  miniAODjetsAK4Label_              = consumes<View<pat::Jet> >               (ps.getParameter<InputTag>("miniAODak4JetSrc"));
   miniAODjetsAK8Label_              = consumes<View<pat::Jet> >               (ps.getParameter<InputTag>("miniAODak8JetSrc"));
 
 
@@ -196,9 +212,9 @@ lldjNtuple::lldjNtuple(const edm::ParameterSet& ps) :
 
  }
 
-// if(doLLDJAOD_){
-//  void branchesLLDJAODJets        (TTree*);
-// }
+ if(doLLDJAOD_){
+  branchesLLDJAODJets        (tree_);
+ }
 
 //  void branchesAODJets            (TTree*);
 //  void branchesMiniAODJets        (TTree*);
@@ -259,9 +275,9 @@ void lldjNtuple::analyze(const edm::Event& e, const edm::EventSetup& es) {
 
  }
 
-// if(doLLDJAOD_){
-//  void branchesLLDJAODJets        (TTree*);
-// }
+ if(doLLDJAOD_){
+  fillLLDJAODJets (e, es);
+ }
 
 //  void branchesAODJets            (TTree*);
 //  void branchesMiniAODJets        (TTree*);

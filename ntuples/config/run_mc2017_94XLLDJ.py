@@ -120,10 +120,21 @@ process.lldjNtuple = cms.EDAnalyzer('lldjNtuple',
  miniAODelePFClusEcalIsoProducer  = cms.InputTag("electronEcalPFClusterIsolationProducer"),
  miniAODelePFClusHcalIsoProducer  = cms.InputTag("electronHcalPFClusterIsolationProducer"),
  miniAODBadChargedCandidateFilter = cms.InputTag("BadChargedCandidateFilter"),
- miniAODBadPFMuonFilter           = cms.InputTag("BadPFMuonFilter")
+ miniAODBadPFMuonFilter           = cms.InputTag("BadPFMuonFilter"),
 
-
-
+ AODak4CaloJetsSrc         = cms.InputTag('ak4CaloJets' , '', 'RECO'),
+ AODak4PFJetsSrc           = cms.InputTag('ak4PFJets'   , '', 'RECO'),
+ AODak4PFJetsCHSSrc        = cms.InputTag('ak4PFJetsCHS', '', 'RECO'),
+ selectedPatJetsSrc        = cms.InputTag('selectedPatJets'),                                   
+ AODVertexSrc              = cms.InputTag('offlinePrimaryVertices', '', 'RECO'),
+ AODTrackSrc               = cms.InputTag('generalTracks', '', 'RECO'),
+ vertexFitterConfig = cms.PSet(
+        finder = cms.string('avf'),
+        sigmacut = cms.double(10.),
+        Tini = cms.double(256.),
+        ratio = cms.double(0.25),
+        ),
+ beamspotLabel_            = cms.InputTag('offlineBeamSpot'),
 
 #
 #

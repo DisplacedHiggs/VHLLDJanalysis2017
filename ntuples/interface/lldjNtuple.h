@@ -218,6 +218,45 @@ class lldjNtuple : public edm::EDAnalyzer {
   edm::EDGetTokenT<bool> miniAODBadChCandFilterToken_;
   edm::EDGetTokenT<bool> miniAODBadPFMuonFilterToken_;
 
+  // Jets !!  
+  //edm::EDGetTokenT<edm::View<pat::Jet> >           jetsAK4Label_;
+  edm::EDGetTokenT<edm::View<pat::Jet> >           selectedPatJetsLabel_;
+   // AOD Jets
+  edm::EDGetTokenT<edm::View<reco::CaloJet> >      AODak4CaloJetsLabel_;   
+  edm::EDGetTokenT<edm::View<reco::PFJet>   >      AODak4PFJetsLabel_;     
+  edm::EDGetTokenT<edm::View<reco::PFJet>   >      AODak4PFJetsCHSLabel_;  
+  // beamspot
+  edm::EDGetTokenT<reco::BeamSpot>                 beamspotLabel_;
+
+
+  //edm::EDGetTokenT<reco::VertexCollection>      AODVertexLabel_;
+  edm::EDGetTokenT<edm::View<reco::Vertex>  >      AODVertexLabel_;
+  edm::EDGetTokenT<edm::View<reco::Track>  >       AODTrackLabel_;
+  const MagneticField*                             magneticField_;
+  edm::ESHandle<Propagator>                        thePropagator_;
+  edm::ESHandle<TransientTrackBuilder>             theBuilder_;
+
+  // jet functions
+  vector<int> getJetTrackIndexs( float jeteta, float jetphi);
+  void calculateAlphaMax( vector<int> jetTrackIDs,
+   float& alphaMax, float& alphaMaxP, float& beta,
+   float& alphaMax2, float& alphaMaxP2, float& beta2);
+  void calculateTrackAngle( vector<int> jetTrackIDs,
+   vector<float> &allTrackAngles,
+   float &totalTrackAngle, float &totalTrackAnglePt);
+  void calculateIP( vector<int> jetTrackIDs,
+   vector<float> &jetIPs, vector<float> &jetIPSigs,
+   float &sumIP, float &sumIPSig);
+
+  float findMedian(vector<float> thevector);
+
+  void calculateDisplacedVertices(const edm::EventSetup& es, vector<int> jetTrackIDs);
+
+  void deltaVertex3D(GlobalPoint secVert, std::vector<reco::TransientTrack> tracks, double& dEta, double& dPhi, double& pt, double& m, double& energy);
+  void deltaVertex2D(GlobalPoint secVert, std::vector<reco::TransientTrack> tracks, double& dPhi, double& pt, double& mediandPhi);
+  vector<reco::TransientTrack> cleanTracks(vector<reco::TransientTrack> tracks, GlobalPoint vertPos);
+
+
 
 ////
 
@@ -257,41 +296,41 @@ class lldjNtuple : public edm::EDAnalyzer {
 //
 //  // beamspot
 //  edm::EDGetTokenT<reco::BeamSpot>                 beamspotLabel_;
-
-  // jets
-  edm::EDGetTokenT<edm::View<pat::Jet> >           jetsAK4Label_;
-  edm::EDGetTokenT<edm::View<pat::Jet> >           selectedPatJetsLabel_;
-   // AOD Jets
-  edm::EDGetTokenT<edm::View<reco::CaloJet> >      AODak4CaloJetsLabel_;   
-  edm::EDGetTokenT<edm::View<reco::PFJet>   >      AODak4PFJetsLabel_;     
-  edm::EDGetTokenT<edm::View<reco::PFJet>   >      AODak4PFJetsCHSLabel_;  
-
-  //edm::EDGetTokenT<reco::VertexCollection>      AODVertexLabel_;
-  edm::EDGetTokenT<edm::View<reco::Vertex>  >      AODVertexLabel_;
-  edm::EDGetTokenT<edm::View<reco::Track>  >       AODTrackLabel_;
-  const MagneticField*                             magneticField_;
-  edm::ESHandle<Propagator>                        thePropagator_;
-  edm::ESHandle<TransientTrackBuilder>             theBuilder_;
-
-  // jet functions
-  vector<int> getJetTrackIndexs( float jeteta, float jetphi);
-  void calculateAlphaMax( vector<int> jetTrackIDs,
-   float& alphaMax, float& alphaMaxP, float& beta,
-   float& alphaMax2, float& alphaMaxP2, float& beta2);
-  void calculateTrackAngle( vector<int> jetTrackIDs,
-   vector<float> &allTrackAngles,
-   float &totalTrackAngle, float &totalTrackAnglePt);
-  void calculateIP( vector<int> jetTrackIDs,
-   vector<float> &jetIPs, vector<float> &jetIPSigs,
-   float &sumIP, float &sumIPSig);
-
-  float findMedian(vector<float> thevector);
-
-  void calculateDisplacedVertices(const edm::EventSetup& es, vector<int> jetTrackIDs);
-
-  void deltaVertex3D(GlobalPoint secVert, std::vector<reco::TransientTrack> tracks, double& dEta, double& dPhi, double& pt, double& m, double& energy);
-  void deltaVertex2D(GlobalPoint secVert, std::vector<reco::TransientTrack> tracks, double& dPhi, double& pt, double& mediandPhi);
-  vector<reco::TransientTrack> cleanTracks(vector<reco::TransientTrack> tracks, GlobalPoint vertPos);
+//
+//  // jets
+//  edm::EDGetTokenT<edm::View<pat::Jet> >           jetsAK4Label_;
+//  edm::EDGetTokenT<edm::View<pat::Jet> >           selectedPatJetsLabel_;
+//   // AOD Jets
+//  edm::EDGetTokenT<edm::View<reco::CaloJet> >      AODak4CaloJetsLabel_;   
+//  edm::EDGetTokenT<edm::View<reco::PFJet>   >      AODak4PFJetsLabel_;     
+//  edm::EDGetTokenT<edm::View<reco::PFJet>   >      AODak4PFJetsCHSLabel_;  
+//
+//  //edm::EDGetTokenT<reco::VertexCollection>      AODVertexLabel_;
+//  edm::EDGetTokenT<edm::View<reco::Vertex>  >      AODVertexLabel_;
+//  edm::EDGetTokenT<edm::View<reco::Track>  >       AODTrackLabel_;
+//  const MagneticField*                             magneticField_;
+//  edm::ESHandle<Propagator>                        thePropagator_;
+//  edm::ESHandle<TransientTrackBuilder>             theBuilder_;
+//
+//  // jet functions
+//  vector<int> getJetTrackIndexs( float jeteta, float jetphi);
+//  void calculateAlphaMax( vector<int> jetTrackIDs,
+//   float& alphaMax, float& alphaMaxP, float& beta,
+//   float& alphaMax2, float& alphaMaxP2, float& beta2);
+//  void calculateTrackAngle( vector<int> jetTrackIDs,
+//   vector<float> &allTrackAngles,
+//   float &totalTrackAngle, float &totalTrackAnglePt);
+//  void calculateIP( vector<int> jetTrackIDs,
+//   vector<float> &jetIPs, vector<float> &jetIPSigs,
+//   float &sumIP, float &sumIPSig);
+//
+//  float findMedian(vector<float> thevector);
+//
+//  void calculateDisplacedVertices(const edm::EventSetup& es, vector<int> jetTrackIDs);
+//
+//  void deltaVertex3D(GlobalPoint secVert, std::vector<reco::TransientTrack> tracks, double& dEta, double& dPhi, double& pt, double& m, double& energy);
+//  void deltaVertex2D(GlobalPoint secVert, std::vector<reco::TransientTrack> tracks, double& dPhi, double& pt, double& mediandPhi);
+//  vector<reco::TransientTrack> cleanTracks(vector<reco::TransientTrack> tracks, GlobalPoint vertPos);
 
 //  // met
 //  edm::EDGetTokenT<edm::TriggerResults>            patTrgResultsLabel_;
